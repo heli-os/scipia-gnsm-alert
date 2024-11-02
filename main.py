@@ -26,8 +26,7 @@ def get_session_id():
 
 
 def main():
-    target_date = '20241026'
-    # target_date = '20241102'
+    target_date = '20241109'
 
     api_url = f"https://www.sciencecenter.go.kr/scipia/schedules/priceList?SEMESTER_CD=SM110062233270000034&COURSE_CD=CS110062233270000190&DAY={target_date}"
     cookies = {
