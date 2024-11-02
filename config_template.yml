@@ -1,3 +1,5 @@
 cookie: ---
 target_date: ---
 check_interval_seconds: ---
+telegram_api_key: ---
+telegram_chat_id: ---
