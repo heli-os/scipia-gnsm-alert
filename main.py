@@ -42,9 +42,12 @@ async def send_telegram_message(api_key, chat_id, message):
     await bot.send_message(chat_id=chat_id, text=message)
 
 
-def print_and_send_telegram_message(api_key, chat_id, message):
+def print_and_send_telegram_message(message):
+    config = read_config("config.yml")
+    telegram_api_key = config['telegram_api_key']
+    telegram_chat_id = config['telegram_chat_id']
     print(message)
-    asyncio.run(send_telegram_message(api_key, chat_id, message))
+    asyncio.run(send_telegram_message(telegram_api_key, telegram_chat_id, message))
 
 
 def main():
@@ -67,7 +70,7 @@ def main():
     }
     sound_file = "alert-109578.mp3"  # 알림음 파일 경로
 
-    print_and_send_telegram_message(telegram_api_key, telegram_chat_id, "API 모니터링을 시작합니다...")
+    print_and_send_telegram_message("API 모니터링을 시작합니다...")
     while True:
         try:
             now = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
@@ -76,19 +79,15 @@ def main():
             if data["LectureList"] and len(data["LectureList"]) > 0:
                 current_vacancy = data["LectureList"][0]["VACANCY_CNT"]
 
-                print_and_send_telegram_message(telegram_api_key, telegram_chat_id,
-                                                f"[{now}] 현재 잔여석: {current_vacancy}")
+                print_and_send_telegram_message(f"[{now}] 현재 잔여석: {current_vacancy}")
 
                 if current_vacancy >= 1:
-                    print_and_send_telegram_message(telegram_api_key, telegram_chat_id,
-                                                    f"[{now}] 잔여석이 1 이상입니다!")
+                    print_and_send_telegram_message(f"[{now}] 잔여석이 1 이상입니다!")
                     play_sound(sound_file)
             else:
-                print_and_send_telegram_message(telegram_api_key, telegram_chat_id,
-                                                f"[{now}] LectureList가 비어있거나 존재하지 않습니다.")
+                print_and_send_telegram_message(f"[{now}] LectureList가 비어있거나 존재하지 않습니다.")
         except Exception as e:
-            print_and_send_telegram_message(telegram_api_key, telegram_chat_id,
-                                            f"[{now}] 오류 발생: {e}")
+            print_and_send_telegram_message(f"[{now}] 오류 발생: {e}")
 
         time.sleep(check_interval)
 
