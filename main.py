@@ -1,4 +1,5 @@
 import json
+import yaml
 import time
 from datetime import datetime
 
@@ -20,19 +21,33 @@ def play_sound(file_path):
     play(sound)
 
 
-def get_session_id():
-    with open('cookie.txt', 'r') as f:
-        return f.read().strip()
+def read_config(file_path):
+    try:
+        with open(file_path, 'r', encoding='utf-8') as file:
+            config = yaml.safe_load(file)
+            return config
+    except FileNotFoundError:
+        print(f"Error: {file_path} 파일을 찾을 수 없습니다.")
+        return None
+    except yaml.YAMLError as e:
+        print(f"Error: YAML 파일 파싱 중 오류가 발생했습니다. {e}")
+        return None
 
 
 def main():
-    target_date = '20241109'
+    config = read_config("config.yml")
+    cookie = config['cookie']
+    check_interval = config['check_interval_seconds']  # 초 단위로 체크 주기 설정 (예: 60초)
+    target_date = config['target_date']
+
+    print(f"설정된 쿠키(JSESSIONID): {cookie}")
+    print(f"설정된 체크 주기: {check_interval}초")
+    print(f"설정된 대상 날짜: {target_date}")
 
     api_url = f"https://www.sciencecenter.go.kr/scipia/schedules/priceList?SEMESTER_CD=SM110062233270000034&COURSE_CD=CS110062233270000190&DAY={target_date}"
     cookies = {
-        'JSESSIONID': get_session_id()
+        'JSESSIONID': cookie
     }
-    check_interval = 10  # 초 단위로 체크 주기 설정 (예: 60초)
     sound_file = "alert-109578.mp3"  # 알림음 파일 경로
 
     print("API 모니터링을 시작합니다...")
